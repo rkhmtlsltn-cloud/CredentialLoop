@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor Issuer as Approved course issuer
+    actor Learner as Learner
+    participant App as CredentialLoop app
+    participant Registry as CredentialLoopRegistry
+    actor Verifier as Employer / verifier
+
+    Issuer->>App: Create credential and sign its off-chain content
+    App->>Registry: issueCredential(random salted reference)
+    Registry-->>App: CredentialIssued event; current status is Active
+    App-->>Learner: Deliver signed credential and reference
+    Learner->>Verifier: Share credential and reference by consent
+    Verifier->>App: Request a status check
+    App->>Registry: checkCredential(reference)
+    Registry-->>App: active status and issuer address
+    App-->>Verifier: Display result; credential content stays off-chain
+
+    opt Issuer later withdraws the credential
+        Issuer->>App: Request revocation
+        App->>Registry: revokeCredential(reference)
+        Registry-->>App: CredentialRevoked event; status is Revoked
+    end
