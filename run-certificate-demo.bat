@@ -13,11 +13,20 @@ if not exist "node_modules\hardhat\package.json" (
   if errorlevel 1 goto failed
 )
 
-echo Starting the local certificate server...
-start "CredentialLoop server" /D "%~dp0" cmd /k npm.cmd run certificate-demo
+set "CL_PORT=4173"
+:choose_port
+powershell.exe -NoProfile -Command "$c=New-Object Net.Sockets.TcpClient; try {$c.Connect('127.0.0.1',[int]$env:CL_PORT); exit 0} catch {exit 1} finally {$c.Dispose()}" >nul 2>nul
+if errorlevel 1 goto port_selected
+set /a CL_PORT+=1
+if %CL_PORT% geq 4190 goto failed
+goto choose_port
+
+:port_selected
+echo Starting CredentialLoop on port %CL_PORT%...
+start "CredentialLoop server" /D "%~dp0" cmd /k "set CREDENTIALLOOP_PORT=%CL_PORT%&& npm.cmd run certificate-demo"
 set /a attempts=0
 :wait_for_server
-powershell.exe -NoProfile -Command "try { $r=Invoke-WebRequest -UseBasicParsing 'http://127.0.0.1:4173' -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>nul
+powershell.exe -NoProfile -Command "try { $r=Invoke-WebRequest -UseBasicParsing 'http://127.0.0.1:%CL_PORT%' -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>nul
 if not errorlevel 1 goto open_page
 set /a attempts+=1
 if %attempts% geq 60 goto failed
@@ -25,7 +34,7 @@ timeout /t 1 /nobreak >nul
 goto wait_for_server
 
 :open_page
-start "" "http://127.0.0.1:4173"
+start "" "http://127.0.0.1:%CL_PORT%"
 echo The page is open. Keep the CredentialLoop server window running while you use it.
 pause
 exit /b 0

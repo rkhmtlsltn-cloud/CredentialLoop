@@ -2,7 +2,7 @@ Educational project for the course Introduction to Finance. Not a real product, 
 
 # CredentialLoop — local prototype
 
-CredentialLoop demonstrates certificate file handling and a minimal status registry for short-course credentials. The contract stores only a salted, opaque credential reference, the issuing institution's address, status and timestamps. Credential content and personal data remain off-chain. The web demo accepts PDF, PNG and JPG files, creates a salted fingerprint and records its status in a temporary local registry. It does not authenticate the issuer or prove that a certificate is genuine.
+CredentialLoop demonstrates certificate file handling and a minimal status registry for short-course credentials. The contract stores only a salted, opaque credential reference, the issuing institution's address, status and timestamps. Credential content and personal data remain off-chain. The web demo accepts any non-empty file up to 10 MB, creates a salted fingerprint and records its status in a temporary local registry. It does not authenticate the issuer or prove that a certificate is genuine.
 
 This source folder is prepared as the team's repository. It has not been published to GitHub. After the team uploads it, add the repository URL to the final report title page, presentation title slide and this README. The required demo video link is also to be added to those three places after the team records and uploads the video.
 
@@ -23,7 +23,7 @@ On Windows PowerShell, use the `.cmd` suffix shown above. If you type `npm`, Pow
 
 ### Certificate upload demonstration
 
-On Windows, double-click `run-certificate-demo.bat`, wait for the terminal to show the local address, then open `http://127.0.0.1:4173`. Choose a PDF, PNG or JPG certificate up to 1.5 MB and click **Check and record certificate**. Do not open `web/index.html` directly. Alternatively, run `npm.cmd ci` once and then `npm.cmd run certificate-demo` from this project folder. The demo checks the file format, computes its fingerprint in memory, adds a random salt and stores only the opaque reference in its temporary Hardhat chain. It then reads the status back and displays success. The uploaded file is not saved.
+On Windows, double-click `run-certificate-demo.bat`; it selects an available local port, starts the server and opens the page. Upload any non-empty file up to 10 MB and click **Check and record certificate**. Do not open `web/index.html` directly. Alternatively, run `npm.cmd ci` once and then `npm.cmd run certificate-demo` from this project folder. The demo computes a fingerprint in memory, adds a random salt and stores only the opaque reference in its temporary Hardhat chain. It then reads the status back and displays success. This does not authenticate the issuer or prove the certificate is genuine. The uploaded file is not saved.
 
 This demonstrates file handling and a credential status record; it does not contact the issuer, prove the certificate is authentic, or confirm the learner. The local test issuer writes the record. A real verification would require an issuer-signed credential or a trusted issuer API, and production deployment would need consortium governance.
 
